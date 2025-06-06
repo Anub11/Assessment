@@ -14,16 +14,61 @@ This repository contains Kubernetes manifests to deploy an NGINX web server on a
 
 ### Create an EKS Cluster
 
-```bash
-eksctl create cluster \
-  --name nginx-cluster \
+Step 1: Update kubeconfig for the EKS Cluster
+Run the following command to update the kubeconfig file with your EKS cluster details:
+aws eks --region ap-south-1 update-kubeconfig --name devopsshack-cluster
+This command retrieves the kubeconfig configuration for the devopsshack-cluster and stores it in the default kubeconfig file (e.g., ~/.kube/config).
+________________________________________
+Step 2: Install kubectl
+Follow these steps to install the latest version of kubectl:
+1.	Download the kubectl binary:
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+2.	Make the binary executable:
+chmod +x kubectl
+3.	Move the binary to a system PATH directory:
+sudo mv kubectl /usr/local/bin/
+4.	Verify the installation:
+kubectl version --client
+________________________________________
+Step 3: Install eksctl
+Follow these steps to install eksctl, a CLI tool for managing EKS clusters:
+1.	Download the eksctl tarball:
+curl -LO "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz"
+2.	Extract the tarball:
+tar -xzf eksctl_Linux_amd64.tar.gz
+3.	Move the binary to a system PATH directory:
+sudo mv eksctl /usr/local/bin
+4.	Verify the installation:
+eksctl version
+
+
+
+Step 4: Associate IAM OIDC Provider
+Associate an IAM OIDC provider with your EKS cluster to enable IAM roles for Kubernetes service accounts:
+eksctl utils associate-iam-oidc-provider --region ap-south-1 --cluster devopsshack-cluster --approve
+This command associates the OIDC provider required for enabling IAM roles for service accounts in the EKS cluster.
+________________________________________
+Step 5: Create an IAM Service Account
+Create a Kubernetes service account with IAM permissions for the Amazon EBS CSI Driver:
+eksctl create iamserviceaccount \
   --region ap-south-1 \
-  --nodegroup-name linux-nodes \
-  --node-type t3.medium \
-  --nodes 2 \
-  --nodes-min 2 \
-  --nodes-max 4 \
-  --managed
+  --name ebs-csi-controller-sa \
+  --namespace kube-system \
+  --cluster devopsshack-cluster \
+  --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+  --approve \
+  --override-existing-serviceaccounts
+•	--name ebs-csi-controller-sa: Name of the service account.
+•	--namespace kube-system: Namespace where the service account will be created.
+•	--attach-policy-arn: IAM policy ARN for EBS CSI Driver permissions.
+•	--approve: Automatically approve the creation.
+________________________________________
+Step 6: Deploy the AWS EBS CSI Driver
+Deploy the AWS EBS CSI Driver in the cluster using the following command:
+kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/ecr/?ref=release-1.11"
+This command deploys the latest stable release of the EBS CSI Driver from the official repository.
+________________________________________
+
 
 ### install ArgoCD
 ### Install ArgoCD in the argocd namespace:
