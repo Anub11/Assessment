@@ -32,7 +32,7 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-  type: LoadBalancer  # Use ClusterIP if not on cloud
+  type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -42,7 +42,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: nginx.example.com
+  - host: www.anubhav.com
     http:
       paths:
       - path: /
