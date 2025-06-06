@@ -25,27 +25,27 @@ eksctl create cluster \
   --nodes-max 4 \
   --managed
 
-install ArgoCD
-Install ArgoCD in the argocd namespace:
+### install ArgoCD
+### Install ArgoCD in the argocd namespace:
 
 kubectl create namespace argocd
 
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-Wait for pods to be ready:
+### Wait for pods to be ready:
 
 kubectl get pods -n argocd
 
-Access ArgoCD UI
-Option 1: Port-forward (for secure local access)
+### Access ArgoCD UI
+### Option 1: Port-forward (for secure local access)
 
 kubectl port-forward svc/argocd-server -n argocd 8080:443
-Then open: https://localhost:8080
+### Then open: https://localhost:8080
 
-Option 2: LoadBalancer (Cloud Access)
-Patch the ArgoCD server to use LoadBalancer:
+### Option 2: LoadBalancer (Cloud Access)
+### Patch the ArgoCD server to use LoadBalancer:
 
-kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+### kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 Get the URL:
 
 
