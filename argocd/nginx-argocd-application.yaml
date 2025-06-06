@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-app
+  namespace: argocd  # Make sure ArgoCD is installed in this namespace
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/your-org/your-repo.git
+    targetRevision: main  # branch, tag, or commit
+    path: nginx  # path inside the repo where manifests are stored
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+
+  syncPolicy:
+    automated:
+      prune: true         # remove resources no longer defined in Git
+      selfHeal: true      # reapply if changes are made outside ArgoCD
+    syncOptions:
+    - CreateNamespace=true  # auto-create namespace if not exists
