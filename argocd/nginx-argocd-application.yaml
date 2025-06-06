@@ -7,9 +7,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/your-org/your-repo.git
+    repoURL: https://github.com/Anub11/Assessment.git
     targetRevision: main  # branch, tag, or commit
-    path: nginx  # path inside the repo where manifests are stored
+    path: manifests  # path inside the repo where manifests are stored
 
   destination:
     server: https://kubernetes.default.svc
